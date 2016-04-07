@@ -1,0 +1,16 @@
+<div class="container">
+
+<% if @portfolios %>
+	<% @portfolios.each do |portfolio| %>
+		<a href="/portfolios/<%= portfolio.id %>"><%= portfolio.name%></a><br><br>
+	<% end %>
+<% end %>
+
+	<br>
+	<h1>Construct your porfolio</h1>
+	<form action="/portfolios" method="post">
+		<label>Name</label><br>
+		<input type="text" name="portfolio[name]"><br>
+		<input type="submit" value="Create Portfolio">
+	</form>
+</div>

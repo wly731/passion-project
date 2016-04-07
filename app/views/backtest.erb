@@ -1,0 +1,30 @@
+<div class="container">
+	<h1>Stock allocation</h1>
+	<h3><p>Number of stocks: <span id="num_of_stocks"><%= @stocks.length %></span></p></h3>
+	<% if @stocks %>
+		<form id="backtest_info">
+			<% @stocks.each do |stock|%>
+				<label><%= stock.symbol%> <%= stock.name %></label>
+				<input id="allocation" type="number" name="<%= stock.symbol %>">
+				<br>
+			<% end %>
+			<h1>Time period</h1>
+			<label>Start Date:</label>
+			<input id="start_date" type="date" name="start_date" value="2016-01-01">
+			<br>
+			<label>End Date:</label>
+			<input id="end_date" type="date" name="end_date" value="2016-04-05"><br>
+			<input type="submit" value="start backtest">
+		</form>
+	<% end %>
+
+	<br>
+	
+	<div class="backtest_result">
+		<table>
+			
+		</table>
+	</div>
+
+
+</div>

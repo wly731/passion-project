@@ -1,0 +1,18 @@
+<div class="container">
+	<% if @stocks %>
+		<ul>
+		<% @stocks.each do |stock| %>
+			<li><%= stock.symbol%>: <%= stock.name %></li>
+		<% end %>
+		</ul>
+	<% end %>
+
+
+	<h1>Add stocks to your portfolio</h1>
+	<form action="/portfolios/<%= @portfolio.id %>" method="post">
+		<input type="hidden" name="_method" value="put">
+		<label>Stock symbol</label><br>
+		<input type="text" name="symbol"><br>
+		<input type="submit" value="Add Stock">
+	</form>
+</div>

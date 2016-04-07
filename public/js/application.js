@@ -47,8 +47,8 @@ var backtestSubmit = function(){
 		console.log(complete_url);
 
 		var request = $.ajax({
-			url: complete_url, //this is the real url
-			// url: "/portfolios/result_testing", //use during development, avoid too many api calls
+			// url: complete_url, //this is the real url
+			url: "/portfolios/result_testing", //use during development, avoid too many api calls
 			type: 'GET'
 		});
 
@@ -103,8 +103,7 @@ var backtestSubmit = function(){
 				index_value = index_value * (1 + (index_return / 100));
 				$( `.backtest_result table tr:nth-of-type(${i})` ).append( `<td class="portfolio_value">${portfolio_value}</td>` );
 				$( `.backtest_result table tr:nth-of-type(${i})` ).append( `<td class="index_value">${index_value}</td>` );
-				graph_json.data.json << {"date": $( `.backtest_result table tr:nth-of-type(${i})` ).attr('id'), "portfolio": portfolio_value, "nasdaq": index_value};
-				debugger;
+				graph_json.data.json.push({"date": $( `.backtest_result table tr:nth-of-type(${i})` ).attr('id'), "portfolio": portfolio_value, "nasdaq": index_value});
 				// $( `.backtest_result table tr:nth-of-type(${i})` )
 			}
 

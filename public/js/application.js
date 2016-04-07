@@ -16,7 +16,7 @@ var backtestSubmit = function(){
 		var performance_table = {};
 		var start_date = $( '#start_date' ).val();
 		var end_date = $( '#end_date' ).val();
-		
+
 		console.log(num_of_stocks);
 		for (var i=1;i<=num_of_stocks;i++){
 			var name = $( `#allocation:nth-of-type(${i})`).attr('name');
@@ -47,13 +47,13 @@ var backtestSubmit = function(){
 		console.log(complete_url);
 
 		var request = $.ajax({
-			// url: complete_url, //this is the real url
-			url: "/portfolios/result_testing", //use during development, avoid too many api calls
+			url: complete_url, //this is the real url
+			// url: "/portfolios/result_testing", //use during development, avoid too many api calls
 			type: 'GET'
 		});
 
 		request.done(function(json){
-
+			var graph_json= {data:{x:'date',xFormat: '%Y-%m-%d', json:[], keys:{x:"date", value:["portfolio","nasdaq"]}}, axis:{x:{type:"timeseries"}}};
 			var date_header = `<tr id="header"><th>Date</th></tr>`; //initialize table header with date and stocks symbols
 			$( '.backtest_result table').append(date_header);
 			for (var j=0;j<num_of_stocks;j++){
@@ -70,11 +70,13 @@ var backtestSubmit = function(){
 
 			for (var i=0;i<num_of_days-1;i++){ //iterate all days e.g. 0 to 63 //row for the table
 				var date = json["query"]["results"]["quote"][i]["Date"];
+
 				var date_row = `<tr id="${date}"><td>${date}</td></tr>`
 				$( '.backtest_result table' ).append(date_row);
 
 				var total = 0;
 				performance_table[date] = {};
+
 
 				for (var j=0;j<num_of_stocks;j++){ //iterate each stock e.g. 0 to 3 //column for the table
 					var today_closing = Number(json["query"]["results"]["quote"][i+(num_of_days*j)]["Adj_Close"]);
@@ -85,11 +87,10 @@ var backtestSubmit = function(){
 					total = Number(total.toPrecision(4));
 					performance_table[date][Object.keys(stock_allocation)[j]] = proportional_daily_return;
 					$ ( `#${date}` ).append(`<td>${proportional_daily_return}</td>`);
-							
-				}
-				    $ ( `#${date}`).append(`<td class="portfolio_return">${total}</td>`);
-				    $ ( `#${date}`).append(`<td class="index_return">0.5</td>`);
 
+				}
+		    $ ( `#${date}`).append(`<td class="portfolio_return">${total}</td>`);
+		    $ ( `#${date}`).append(`<td class="index_return">0.5</td>`);
 			}
 
 			var portfolio_value = 100; //initialize base value as 100
@@ -102,14 +103,14 @@ var backtestSubmit = function(){
 				index_value = index_value * (1 + (index_return / 100));
 				$( `.backtest_result table tr:nth-of-type(${i})` ).append( `<td class="portfolio_value">${portfolio_value}</td>` );
 				$( `.backtest_result table tr:nth-of-type(${i})` ).append( `<td class="index_value">${index_value}</td>` );
-				
-
+				graph_json.data.json << {"date": $( `.backtest_result table tr:nth-of-type(${i})` ).attr('id'), "portfolio": portfolio_value, "nasdaq": index_value};
+				debugger;
 				// $( `.backtest_result table tr:nth-of-type(${i})` )
 			}
 
 			debugger;
 
-			
+
 		});
 
 		request.fail(function(){

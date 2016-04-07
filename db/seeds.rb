@@ -1,4 +1,4 @@
-require 'csv'
+
 
 def parse_csv(file_path)
 	csv = CSV.open(file_path, :headers => true, :header_converters => :symbol)

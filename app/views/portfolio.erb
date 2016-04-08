@@ -1,16 +1,21 @@
 <div class="container">
-
-<% if @portfolios %>
-	<% @portfolios.each do |portfolio| %>
-		<a href="/portfolios/<%= portfolio.id %>"><%= portfolio.name%></a><br><br>
+	<h2>Portfolios Available</h2>
+	<% if @portfolios %>
+		<% @portfolios.each do |portfolio| %>
+			<a href="/portfolios/<%= portfolio.id %>"><%= portfolio.name%></a><br><br>
+		<% end %>
 	<% end %>
-<% end %>
 
 	<br>
-	<h1>Construct your porfolio</h1>
+<%if session[:id]%>
+	<h2>Construct A New Porfolio</h2>
 	<form action="/portfolios" method="post">
 		<label>Name</label><br>
 		<input type="text" name="portfolio[name]"><br>
 		<input type="submit" value="Create Portfolio">
 	</form>
+<%else%>
+	<h2>You must log in to create a portfolio!</h2>
+<%end%>
+
 </div>

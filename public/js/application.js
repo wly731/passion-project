@@ -23,6 +23,10 @@ var backtestSubmit = function(){
 			var name = $( `#allocation:nth-of-type(${i})`).attr('name');
 			stock_allocation[name] = Number($( `#allocation:nth-of-type(${i})`).val())/100;
 		}
+
+		stock_allocation["Nasdaq"] = 1;
+
+
 		console.log(stock_allocation);
 		console.log(start_date);
 		console.log(end_date);
@@ -34,9 +38,7 @@ var backtestSubmit = function(){
 			stock_query_string += `"${Object.keys(stock_allocation)[i]}",`
 		}
 
-		stock_query_string = stock_query_string.substring(0, stock_query_string.length - 1);
-
-		stock_query_string += `)`;
+		stock_query_string = stock_query_string + `"^IXIC")`
 
 		console.log(stock_query_string);
 
@@ -48,8 +50,8 @@ var backtestSubmit = function(){
 		console.log(complete_url);
 
 		var request = $.ajax({
-			// url: complete_url, //this is the real url
-			url: "/portfolios/result_testing", //use during development, avoid too many api calls
+			url: complete_url, //this is the real url
+			// url: "/portfolios/result_testing", //use during development, avoid too many api calls
 			type: 'GET'
 		});
 
@@ -67,7 +69,8 @@ var backtestSubmit = function(){
 			$( '#header').append( `<th>Nasdaq value</th>` );
 
 			var count = json["query"]["count"];
-			var num_of_days = count/num_of_stocks;
+			var num_of_stocks_and_index = num_of_stocks + 1
+			var num_of_days = count/num_of_stocks_and_index; // + 1 because need to include the index (NASDAQ)
 
 			for (var i=0;i<num_of_days-1;i++){ //iterate all days e.g. 0 to 63 //row for the table
 				var date = json["query"]["results"]["quote"][i]["Date"];
@@ -75,23 +78,32 @@ var backtestSubmit = function(){
 				var date_row = `<tr id="${date}"><td>${date}</td></tr>`
 				$( '.backtest_result table' ).append(date_row);
 
-				var total = 0;
+				var total_daily_return = 0;
 				performance_table[date] = {};
 
 
-				for (var j=0;j<num_of_stocks;j++){ //iterate each stock e.g. 0 to 3 //column for the table
+				for (var j=0;j<num_of_stocks_and_index;j++){ //iterate each stock e.g. 0 to 4 //column for the table
 					var today_closing = Number(json["query"]["results"]["quote"][i+(num_of_days*j)]["Adj_Close"]);
 					var yesterday_closing = Number(json["query"]["results"]["quote"][i+1+(num_of_days*j)]["Adj_Close"])
 					var proportion = stock_allocation[Object.keys(stock_allocation)[j]];
 					var proportional_daily_return = Number((((today_closing/yesterday_closing) - 1)*proportion*100).toPrecision(4));
-					total += proportional_daily_return;
-					total = Number(total.toPrecision(4));
-					performance_table[date][Object.keys(stock_allocation)[j]] = proportional_daily_return;
-					$ ( `#${date}` ).append(`<td>${proportional_daily_return}</td>`);
+					var index_daily_return = 0;
 
+
+					if (j != num_of_stocks_and_index-1){
+						total_daily_return += proportional_daily_return;
+						total_daily_return = Number(total_daily_return.toPrecision(4));
+						performance_table[date][Object.keys(stock_allocation)[j]] = proportional_daily_return;
+						$ ( `#${date}` ).append(`<td>${proportional_daily_return}</td>`);
+					}
+					
+					if (j == num_of_stocks_and_index-1){
+						index_daily_return = Number((((today_closing/yesterday_closing) - 1)*proportion*100).toPrecision(4));
+					}
 				}
-		    $ ( `#${date}`).append(`<td class="portfolio_return">${total}</td>`);
-		    $ ( `#${date}`).append(`<td class="index_return">0.5</td>`);
+		    $ ( `#${date}`).append(`<td class="portfolio_return">${total_daily_return}</td>`);
+		    $ ( `#${date}`).append(`<td class="index_return">${index_daily_return}</td>`);
+		    
 			}
 
 			var portfolio_value = 100; //initialize base value as 100
@@ -108,9 +120,9 @@ var backtestSubmit = function(){
 				// $( `.backtest_result table tr:nth-of-type(${i})` )
 			}
 
-			debugger;
+			
 			var chart = c3.generate(graph_json);
-			debugger;
+			
 		});
 
 		request.fail(function(){

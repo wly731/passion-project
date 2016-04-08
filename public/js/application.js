@@ -110,6 +110,7 @@ var backtestSubmit = function(){
 
 			debugger;
 			var chart = c3.generate(graph_json);
+			debugger;
 		});
 
 		request.fail(function(){

@@ -56,7 +56,11 @@ var backtestSubmit = function(){
 		});
 
 		request.done(function(json){
+
+			clearFormTableChart(); // clear the previous result if there's any
+
 			var graph_json= {bindto:"#chart", data:{x:'date',xFormat: '%Y-%m-%d', json:[], keys:{x:"date", value:["portfolio","nasdaq"]}}, axis:{x:{type:"timeseries"}}};
+			$( '.backtest_result').append(`<table></table>`);
 			var date_header = `<tr id="header"><th>Date</th></tr>`; //initialize table header with date and stocks symbols
 			$( '.backtest_result table').append(date_header);
 			for (var j=0;j<num_of_stocks;j++){
@@ -130,8 +134,15 @@ var backtestSubmit = function(){
 		});
 	});
 
-
-
-
-
 };
+
+
+
+var clearFormTableChart = function(){
+	$( `.backtest_result table` ).remove();
+	$( `#chart` ).empty();
+};
+
+
+
+

@@ -13,19 +13,20 @@
 			<input id="start_date" type="date" name="start_date" value="2016-01-01">
 			<br>
 			<label>End Date:</label>
-			<input id="end_date" type="date" name="end_date" value="2016-04-05"><br>
+			<input id="end_date" type="date" name="end_date" value="<%= Time.now.strftime("%Y-%m-%d") %>"><br>
 			<input type="submit" value="start backtest">
 		</form>
 	<% end %>
 
 	<br>
-	
-	<div class="backtest_result">
-		<table>
-			
-		</table>
-	</div>
 
 	<div id="chart">
+	
 	</div>
+	
+	<div class="backtest_result">
+		
+	</div>
+
+	
 </div>
